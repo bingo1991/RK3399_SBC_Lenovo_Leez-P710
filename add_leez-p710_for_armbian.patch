@@ -1,0 +1,48 @@
+From dc89a55bbd09979319babbc97ddb9ca09cafd8dc Mon Sep 17 00:00:00 2001
+From: lihongbin <bingo.lee@huawei.com>
+Date: Fri, 1 Dec 2023 23:50:33 +0800
+Subject: [PATCH] Add support for Leez P710
+
+---
+ config/boards/leez-p710.conf | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+ create mode 100644 config/boards/leez-p710.conf
+
+diff --git a/config/boards/leez-p710.conf b/config/boards/leez-p710.conf
+new file mode 100644
+index 000000000..ccf39b58c
+--- /dev/null
++++ b/config/boards/leez-p710.conf
+@@ -0,0 +1,28 @@
++# Rockchip RK3399 hexa core 4GB LPDDR4 SoC GBe eMMC USB3 USB-C WiFi/BT
++BOARD_NAME="Leez P710"
++BOARDFAMILY="rockchip64"
++BOARD_MAINTAINER="bingo1991"
++BOOTCONFIG="leez-rk3399_defconfig"
++BOOT_FDT_FILE="rockchip/rk3399-leez-p710.dtb"
++KERNEL_TARGET="current,edge"
++KERNEL_TEST_TARGET="current,edge"
++FULL_DESKTOP="yes"
++BOOT_LOGO="desktop"
++IMAGE_PARTITION_TABLE="gpt"
++BOOT_SCENARIO="tpl-spl-blob"
++SRC_EXTLINUX="yes"
++SRC_CMDLINE="console=ttyS2,1500000 console=tty0"
++DDR_BLOB="rk33/rk3399_ddr_933MHz_v1.30.bin"
++
++function post_family_tweaks_bsp__Leez-P710() {
++	display_alert "Installing BSP firmware and fixups"
++
++	# Bluetooth for most of others (custom patchram is needed only in legacy)
++	install -m 755 $SRC/packages/bsp/rk3399/brcm_patchram_plus_rk3399 $destination/usr/bin
++	cp $SRC/packages/bsp/rk3399/rk3399-bluetooth.service $destination/lib/systemd/system/
++
++	# Swap out the chip for some boards
++	sed -i s%BCM4345C5%BCM4356A2%g $destination/lib/systemd/system/rk3399-bluetooth.service
++
++	return 0
++}
+\ No newline at end of file
+-- 
+2.34.1
+
